@@ -1,0 +1,109 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Live Cricket Scoreboard</title>
+  <style>
+    body {
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+      background: linear-gradient(135deg, #0f2027, #203a43, #2c5364);
+      min-height: 100vh;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      margin: 0;
+      color: #ffffff;
+    }
+    .card {
+      background: rgba(255, 255, 255, 0.08);
+      backdrop-filter: blur(12px);
+      border-radius: 16px;
+      padding: 30px;
+      width: 360px;
+      box-shadow: 0 8px 32px rgba(0, 0, 0, 0.37);
+      border: 1px solid rgba(255, 255, 255, 0.15);
+      text-align: center;
+    }
+    .badge {
+      display: inline-block;
+      padding: 4px 12px;
+      border-radius: 20px;
+      font-size: 12px;
+      font-weight: 600;
+      letter-spacing: 0.5px;
+      background-color: #e74c3c;
+      text-transform: uppercase;
+      margin-bottom: 12px;
+    }
+    h2 { margin: 8px 0; font-size: 22px; }
+    .score { font-size: 44px; font-weight: 700; color: #00d2d3; margin: 16px 0; }
+    .details {
+      display: flex;
+      justify-content: space-around;
+      border-top: 1px solid rgba(255, 255, 255, 0.15);
+      padding-top: 16px;
+      margin-top: 16px;
+    }
+    .detail-item { display: flex; flex-direction: column; }
+    .detail-item span:first-child { font-size: 12px; color: #a4b0be; }
+    .detail-item span:last-child { font-size: 16px; font-weight: 600; margin-top: 4px; }
+    button {
+      margin-top: 24px;
+      width: 100%;
+      padding: 10px;
+      background-color: #ff9900;
+      border: none;
+      border-radius: 8px;
+      color: #111;
+      font-size: 14px;
+      font-weight: 700;
+      cursor: pointer;
+    }
+    button:hover { background-color: #e68a00; }
+  </style>
+</head>
+<body>
+  <div class="card">
+    <div id="statusBadge" class="badge">Loading...</div>
+    <h2 id="matchTitle">Match Data</h2>
+    <div id="scoreDisplay" class="score">--/--</div>
+    <div class="details">
+      <div class="detail-item">
+        <span>BATTING</span>
+        <span id="battingTeam">--</span>
+      </div>
+      <div class="detail-item">
+        <span>OVERS</span>
+        <span id="oversDisplay">--</span>
+      </div>
+      <div class="detail-item">
+        <span>RUN RATE</span>
+        <span id="runRateDisplay">--</span>
+      </div>
+    </div>
+    <button onclick="fetchScore()">Refresh Score</button>
+  </div>
+
+  <script>
+    const API_URL = "https://f4w1ebg1ul.execute-api.ap-south-1.amazonaws.com/prod";
+
+    async function fetchScore() {
+      try {
+        const response = await fetch(API_URL);
+        const data = await response.json();
+        document.getElementById("statusBadge").textContent = data.status || "LIVE";
+        document.getElementById("matchTitle").textContent = data.match || "Cricket Match";
+        document.getElementById("scoreDisplay").textContent = data.score || "--";
+        document.getElementById("battingTeam").textContent = data.batting_team || "--";
+        document.getElementById("oversDisplay").textContent = data.overs || "--";
+        document.getElementById("runRateDisplay").textContent = data.run_rate || "--";
+      } catch (err) {
+        console.error("Error fetching scoreboard:", err);
+        document.getElementById("matchTitle").textContent = "Failed to load";
+      }
+    }
+    fetchScore();
+  </script>
+</body>
+</html>
